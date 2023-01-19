@@ -1,9 +1,10 @@
 import {FastifyInstance} from "fastify"
 import { prisma } from "../lib/prisma"
-import {number, z} from 'zod'//library that helps  u typing and validating data
+import { z} from 'zod'//library that helps  u typing and validating data
 import dayjs from "dayjs"// Library that helps u work with data
 
 export async function appRoutes (app : FastifyInstance) {
+  //create habit
   app.post('/habits', async (request)=>{
     const createHabitBody = z.object({
       title: z.string(),
@@ -31,5 +32,48 @@ export async function appRoutes (app : FastifyInstance) {
       }
     })
   })
-  
+ //get habits of a specific date 
+  app.get('/day', async (request) => {
+    const getDayParams = z.object({
+      //coerce = convert variables type
+      date: z.coerce.date(),
+    })
+
+    const { date } = getDayParams.parse(request.query)
+
+    const parsedDate = dayjs(date).startOf('day')
+    const weekDay = parsedDate.get('day')
+
+    const possibleHabits = await prisma.habit.findMany({
+      where: {
+        created_at: {
+          //lte:below or equal 
+          lte: date,
+        },
+        WeekDays: {
+          some: {
+            week_day:  weekDay,
+          }
+        }
+      },
+    })
+
+    const day = await prisma.day.findFirst({
+      where: {
+        date: parsedDate.toDate(),
+      },
+      include: {
+        dayHabits: true,
+      }
+    })
+
+    const completedHabits = day?.dayHabits.map(dayHabit => {
+      return dayHabit.habit_id
+    })
+
+    return {
+      possibleHabits,
+      completedHabits,
+    }
+  })
 }
