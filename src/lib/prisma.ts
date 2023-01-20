@@ -1,2 +1,5 @@
-import {PrismaClient} from'@prisma/client'//ORM
-export const prisma = new PrismaClient()
+import { PrismaClient } from '@prisma/client'
+
+export const prisma = new PrismaClient({
+  log: ['query'],
+})

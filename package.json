@@ -1,16 +1,15 @@
 {
-	"name": "server-nlw2023",
+	"name": "server",
 	"version": "1.0.0",
 	"description": "",
-	"main": "index.js",
+	"main": "soma.js",
 	"scripts": {
-		"dev": "tsx watch src/server.ts",
-		"migrate": "prisma migrate dev && prisma generate",
-		"test": "echo \"Error: no test specified\" && exit 1"
+		"dev": "tsx --watch src/server.ts",
+		"migrate": "prisma migrate dev && prisma generate"
 	},
 	"keywords": [],
-	"author": "Wender José Barbosa Santos",
-	"license": "MIT",
+	"author": "",
+	"license": "ISC",
 	"dependencies": {
 		"@fastify/cors": "^8.2.0",
 		"@prisma/client": "^4.8.1",
