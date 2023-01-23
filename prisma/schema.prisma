@@ -11,7 +11,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-//Habits 
 model Habit {
   id         String   @id @default(uuid())
   title      String
@@ -23,7 +22,6 @@ model Habit {
   @@map("habits")
 }
 
-//All habits of week day 
 model HabitWeekDays {
   id       String @id @default(uuid())
   habit_id String
@@ -35,7 +33,6 @@ model HabitWeekDays {
   @@map("habit_week_days")
 }
 
-//date
 model Day {
   id   String   @id @default(uuid())
   date DateTime
@@ -46,7 +43,6 @@ model Day {
   @@map("days")
 }
 
-//habit id and date of completed
 model DayHabit {
   id String @id @default(uuid())
 

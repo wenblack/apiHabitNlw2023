@@ -4,16 +4,14 @@ import { z } from "zod"
 import { prisma } from "./lib/prisma"
 
 export async function appRoutes(app: FastifyInstance) {
-  //Create new Habit
   app.post('/habits', async (request) => {
-    
     const createHabitBody = z.object({
       title: z.string(),
       weekDays: z.array(
         z.number().min(0).max(6)
       ),
     })
-    
+
     const { title, weekDays } = createHabitBody.parse(request.body)
 
     const today = dayjs().startOf('day').toDate()
@@ -33,17 +31,16 @@ export async function appRoutes(app: FastifyInstance) {
     })
   })
 
-  //Get all habits of the day
   app.get('/day', async (request) => {
     const getDayParams = z.object({
       date: z.coerce.date(),
     })
 
-    const { date } = getDayParams.parse(request.query)//Receive date from request
+    const { date } = getDayParams.parse(request.query)
 
     const parsedDate = dayjs(date).startOf('day')
     const weekDay = parsedDate.get('day')
-    
+
     const possibleHabits = await prisma.habit.findMany({
       where: {
         created_at: {
@@ -56,7 +53,7 @@ export async function appRoutes(app: FastifyInstance) {
         }
       },
     })
-  
+
     const day = await prisma.day.findFirst({
       where: {
         date: parsedDate.toDate(),
@@ -68,7 +65,7 @@ export async function appRoutes(app: FastifyInstance) {
 
     const completedHabits = day?.dayHabits.map(dayHabit => {
       return dayHabit.habit_id
-    })
+    }) ?? []
 
     return {
       possibleHabits,
@@ -76,14 +73,13 @@ export async function appRoutes(app: FastifyInstance) {
     }
   })
 
-  //Toggle done/undone a habit
   app.patch('/habits/:id/toggle', async (request) => {
     const toggleHabitParams = z.object({
       id: z.string().uuid()
     })
 
     const { id } = toggleHabitParams.parse(request.params)
-    //Limiting to searching habits of today
+
     const today = dayjs().startOf('day').toDate()
 
     let day = await prisma.day.findUnique({
@@ -108,14 +104,14 @@ export async function appRoutes(app: FastifyInstance) {
         }
       }
     })
-    //if complete toggle undone
+
     if(dayHabit) {
       await prisma.dayHabit.delete({
         where: {
           id: dayHabit.id
         }
       })
-    } else {//else condition
+    } else {
       await prisma.dayHabit.create({
         data: {
           day_id: day.id,
@@ -125,9 +121,7 @@ export async function appRoutes(app: FastifyInstance) {
     }
   })
 
-  //summary of habits
   app.get('/summary', async () => {
-    //using method query Raw to use SQL and reduce queries from database. D = name of table
     const summary = await prisma.$queryRaw`
       SELECT 
         D.id, 
