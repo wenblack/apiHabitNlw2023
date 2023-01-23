@@ -3,8 +3,9 @@
 	"version": "1.0.0",
 	"description": "Api Server of Habits App",
 	"main": "src/server.ts",
+	"type": "module",
 	"scripts": {
-		"dev": "tsx --watch src/server.ts"
+		"dev": "tsx src/server.ts"
 	},
 	"keywords": [],
 	"author": "Wender Barbosa",
@@ -13,6 +14,7 @@
 		"@fastify/cors": "^8.2.0",
 		"@prisma/client": "^4.8.1",
 		"dayjs": "^1.11.7",
+		"dotenv": "^16.0.3",
 		"fastify": "^4.11.0",
 		"zod": "^3.20.2"
 	},
